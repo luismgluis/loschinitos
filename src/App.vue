@@ -1,18 +1,26 @@
 <template>
   <v-app id="inspire">
-    <component
+   <component v-if="!pantalla2enabled"
       @updatingPantalla="updatingPantallaActual"
-      :is="pantallaActual"
-      :key="pantallaActual_name"
+      :is="pantallas.home"
+      key="Home"
     ></component>
+   
   </v-app>
 </template>
 
 <script>
+/*  
+<component  key="Secundaria"
+     :is="pantallas.secudaria"></component>
+<component key="Secundaria"
+     :is="pantallas.secudaria"></component> */
 //import Home from "./components/Home";
 //import CustomIcon from "./components/ui/CustomIcon";
-import { VTextField } from "vuetify/lib";
+//import { VTextField } from "vuetify/lib";
 import Home from "./components/Home";
+import client_info from "./components/pages/cliente_info/cliente_info.vue";
+
 
 //import {VContainer} from 'vuetify/lib'
 export default {
@@ -22,9 +30,11 @@ export default {
   },
   data: () => ({
     //
-    pantallaActual: Home,
-    pantallaActual_name: "Home",
-    pantallaHomeOriginal: null,
+    pantallas:{
+      home:Home,
+      secundaria:client_info
+    },
+    pantalla2enabled:false,
     images: {
       background: "./assets/mockup.jpg",
       //close: require("../assets/close.svg")
@@ -39,20 +49,12 @@ export default {
   methods: {
     updatingPantallaActual(nuevapantalla = {}) {
       console.log(nuevapantalla);
-      if (typeof nuevapantalla.name !== "undefined") {
-        if (typeof nuevapantalla.content !== "undefined") {
-          if (this.pantallaActual_name == "Home") {
-            this.pantallaHomeOriginal = this.pantallaActual; //guardamos el home para volver atras
-          } //guardamos Home original
-          if (nuevapantalla.name == "Home") {
-            //si vamos para el home
-            this.pantallaActual_name = "Home";
-            this.pantallaActual = this.pantallaHomeOriginal;
-          } else {
-            this.pantallaActual_name = nuevapantalla.name;
-            this.pantallaActual = nuevapantalla.content;
-          }
-        }
+      if (nuevapantalla.name == "Home") {
+        this.pantallas.secundaria = null;
+        this.pantalla2enabled = false;
+      }else{
+        this.pantallas.secundaria = nuevapantalla.content;
+        this.pantalla2enabled = true;
       }
     },
     buscarEnabled: function(e) {
@@ -60,8 +62,6 @@ export default {
       this.buscando_enabled = !this.buscando_enabled;
     },
     cargar_opciones: function() {
-      let nuevo = new VTextField();
-      console.log(nuevo);
     },
     tabs_content: function(card_id) {
       card_id = card_id.toUpperCase();

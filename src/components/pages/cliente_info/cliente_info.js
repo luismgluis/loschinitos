@@ -1,9 +1,9 @@
-class cliente_info {
+class cliente_info_module {
     constructor() {
         
     }
 }
-export default cliente_info;
+export default cliente_info_module;
 
 /*class client_info {
     constructor() {

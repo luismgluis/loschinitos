@@ -25,11 +25,7 @@
           :inset="item.inset"
         ></v-divider>
 
-        <v-list-item
-          v-else
-          :key="item.title"
-          v-on:click="openCliente(item.title)"
-        >
+        <v-list-item v-else :key="item.title">
           <v-list-item-avatar>
             <v-img :src="item.avatar"></v-img>
           </v-list-item-avatar>
@@ -45,7 +41,6 @@
 </template>
 <script>
 import clientes from "../../../components/pages/clientes/clientes.js";
-import cliente_info from "../../../components/pages/cliente_info/cliente_info.vue";
 
 const clientesmodule = new clientes();
 export default {
@@ -58,16 +53,7 @@ export default {
       busqueda_counter_check: 0,
     };
   },
-  methods: {
-    openCliente(id) {
-      console.log(id);
-       this.$emit("updatingPantalla", {
-        name: "cliente_info",
-        content: cliente_info,
-        data:id
-      });
-    },
-  },
+  methods: {},
   props: [
     /*"propertiename"*/
   ],

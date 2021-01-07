@@ -1,9 +1,6 @@
 <template>
-  <v-card elevation="0" :height="pantalla.size.y">
-    <v-navigation-drawer
-      v-model="barraLateral.visible"
-      app
-    >
+  <v-card class="rounded-0" elevation="0" :height="pantalla.size.y">
+    <v-navigation-drawer v-model="barraLateral.visible" app>
       <!-- contenido de la barra lateral -->
       <component :is="barraLateral.contenido"></component>
     </v-navigation-drawer>
@@ -12,12 +9,12 @@
       <v-app-bar-nav-icon v-on:click="toggleBarraLateral"></v-app-bar-nav-icon>
       <v-toolbar-title>Los chinitos</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
       <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
+      </v-btn> -->
       <template v-slot:extension>
         <v-tabs v-model="tab" centered slider-color="yellow">
           <v-tab
@@ -39,7 +36,7 @@
         :key="item.key"
         :value="`tab-${item.key}`"
       >
-        <v-card flat :height="pantalla.size.y - 104">
+        <v-card class="overflow-y-auto" flat :height="pantalla.size.y - 104">
           <!--<v-card-text v-text="item.name"></v-card-text> <component v-bind:is="item.content" :key="field.id"></component>-->
           <component
             @updatingPantalla="updatingPantallaActual"
@@ -55,6 +52,11 @@
 <script>
 import clientesVue from "../../src/components/pages/clientes/clientes.vue";
 import inicio from "../../src/components/pages/inicio/inicio.vue";
+import ventas from "../../src/components/pages/ventas/ventas.vue";
+import informe from "../../src/components/pages/informe/informe.vue";
+import importexport from "../../src/components/pages/import_export/import_export.vue";
+import barra_lateralVue from './pages/barra_lateral/barra_lateral.vue';
+
 
 export default {
   name: "Home",
@@ -63,11 +65,18 @@ export default {
     tab: null,
     tabs: {
       inicio: { key: "inicio", name: "Inicio", content: inicio },
+      ventas: { key: "ventas", name: "Ventas", content: ventas },
       clientes: { key: "clientes", name: "Clientes", content: clientesVue },
+      informe: { key: "informe", name: "Informe", content: informe },
+      importexport: {
+        key: "importexport",
+        name: "Import/Export",
+        content: importexport,
+      },
     },
-    barraLateral:{
-      visible:false,
-      contenido:null
+    barraLateral: {
+      visible: false,
+      contenido: barra_lateralVue,
     },
     pantalla: {
       size: {
@@ -80,9 +89,9 @@ export default {
     updatingPantallaActual: function(obj) {
       this.$emit("updatingPantalla", obj);
     },
-    toggleBarraLateral(){
+    toggleBarraLateral() {
       this.barraLateral.visible = !this.barraLateral.visible;
-    }
+    },
   },
 };
 </script>

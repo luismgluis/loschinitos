@@ -1,0 +1,151 @@
+<template>
+  <v-container>
+    <v-radio-group v-model="radio_options_model">
+      <v-radio
+        v-for="n in radio"
+        :key="n.key"
+        :label="`${n.name}`"
+        :value="n.key"
+      ></v-radio>
+    </v-radio-group>
+    <v-col v-if="radio_options_model == 'rango'" class="calendar" cols="12" sm="6" md="4">
+      <v-date-picker
+        v-model="fecha"
+        :first-day-of-week="1"
+        locale="es"
+        full-width
+        range
+      ></v-date-picker>
+      <v-text-field
+        v-model="fecha_visual"
+        label="Rango fechas"
+        prepend-icon="mdi-calendar"
+        readonly
+      ></v-text-field>
+    </v-col>
+
+     <v-list two-line>
+      <v-list-item-group
+        v-model="selected"
+        active-class="cyan--text"
+        multiple
+      >
+        <template v-for="(item, index) in items">
+          <v-list-item :key="item.title">
+            <template v-slot:default="{ active }">
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+
+                <v-list-item-subtitle
+                  class="text--primary"
+                  v-text="item.headline"
+                ></v-list-item-subtitle>
+
+                <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <v-list-item-action-text v-text="item.action"></v-list-item-action-text>
+
+                <v-icon
+                  v-if="!active"
+                  color="grey lighten-1"
+                >
+                  mdi-checkbox-blank-outline
+                </v-icon>
+
+                <v-icon
+                  v-else
+                  color="yellow darken-3"
+                >
+                  mdi-checkbox-intermediate
+                </v-icon>
+              </v-list-item-action>
+            </template>
+          </v-list-item>
+
+          <v-divider
+            v-if="index < items.length - 1"
+            :key="index"
+          ></v-divider>
+        </template>
+      </v-list-item-group>
+    </v-list>
+  </v-container>
+</template>
+<script>
+import ventas from "../../../components/pages/ventas/ventas_module.js";
+
+const ventasmodule = new ventas();
+export default {
+  name: "ventas-com",
+  data: function() {
+    return {
+      ventas: ventasmodule,
+      items: ventasmodule.get_listado(),
+      busqueda_value: "",
+      busqueda_counter_check: 0,
+      fecha: new Date().toISOString().substr(0, 10),
+      rango_fechas_enabled :false,
+      radio:[{key:"hoy",name:"Hoy"},{key:"rango",name:"Rango de fechas"}],
+      radio_options_model:"hoy",
+    };
+  },
+  methods: {
+    formatDate(date) {
+      if (!date) return null;
+      console.log(date);
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
+    parseDate(date) {
+      if (!date) return null;
+
+      const [month, day, year] = date.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
+  },
+  props: [
+    /*"propertiename"*/
+  ],
+  computed: {
+    fecha_visual() {
+      let fecha = this.fecha;
+      console.log(this.fecha);
+      if (!Array.isArray(fecha)) {
+          return fecha;
+      }else{
+        return `${this.formatDate(fecha[0])} - ${this.formatDate(fecha[1])}`;
+      }
+      
+    },
+    /* auto_p3: function () {return `${this.p1} - ${this.p2}`}*/
+  },
+  components: {
+    /*"component_name":componentimport*/
+  },
+  watch: {
+    busqueda_value(n, o) {
+      const context = this;
+      console.log(o);
+      if (n == null || n == "") {
+        return;
+      }
+      this.busqueda_counter_check++;
+      let ccc = this.busqueda_counter_check; //hacemos esto para controlar la asycronizacion
+      ventasmodule.filtrar_listado(n, function(res) {
+        if (ccc == context.busqueda_counter_check) {
+          context.items = res;
+        }
+      });
+    },
+    /*p4:function(newval,oldval){__hacealgo__} */
+  },
+};
+</script>
+<style lang="scss" scoped>
+.busqueda {
+  margin-bottom: -20px;
+  padding-bottom: 0px;
+}
+</style>

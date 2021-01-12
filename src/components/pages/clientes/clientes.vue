@@ -11,7 +11,8 @@
         clearable
       ></v-text-field>
     </v-col>
-    <v-list three-line>
+    <v-card class="overflow-y-auto elevation-0" :height="pantalla.size.y - 200">
+      <v-list three-line>
       <template v-for="(item, index) in items">
         <v-subheader
           v-if="item.header"
@@ -27,25 +28,27 @@
 
         <v-list-item
           v-else
-          :key="item.title"
-          v-on:click="openCliente(item.title)"
+          :key="item.id"
+          v-on:click="openCliente(item.id)"
         >
           <v-list-item-avatar>
             <v-img :src="item.avatar"></v-img>
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title v-html="item.title"></v-list-item-title>
-            <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+            <v-list-item-title v-html="item.name"></v-list-item-title>
+            <v-list-item-subtitle v-html="item.age_text"></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </template>
     </v-list>
+    </v-card>
   </v-container>
 </template>
 <script>
+
 import clientes from "../../../components/pages/clientes/clientes.js";
-import cliente_info from "../../../components/pages/cliente_info/cliente_info.vue";
+//import cliente_info from "../../../components/pages/cliente_info/cliente_info.vue";
 
 const clientesmodule = new clientes();
 export default {
@@ -53,19 +56,27 @@ export default {
   data: function() {
     return {
       clientes: clientesmodule,
-      items: clientesmodule.get_listado(),
+      items: [],
       busqueda_value: "",
       busqueda_counter_check: 0,
+      pantalla: {
+        size: {
+          x: window.innerWidth,
+          y: window.innerHeight,
+        },
+      },
     };
   },
   methods: {
-    openCliente(id) {
-      console.log(id);
-       this.$emit("updatingPantalla", {
+    openCliente(uid) {
+      console.log(uid);
+
+      this.$router.replace({ name: "cliente_info", params: { uid: uid } });
+      /*this.$emit("updatingPantalla", {
         name: "cliente_info",
         content: cliente_info,
-        data:id
-      });
+        data:uid
+      }); */
     },
   },
   props: [
@@ -76,6 +87,12 @@ export default {
   },
   components: {
     /*"component_name":componentimport*/
+  },
+  mounted() {
+    const context = this;
+    clientesmodule.get_listado().then(function (listado) {
+      context.items = listado;
+    })
   },
   watch: {
     busqueda_value(n, o) {

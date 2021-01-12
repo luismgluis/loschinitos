@@ -1,26 +1,48 @@
 <template>
-  <v-app id="inspire">
-   <component v-if="!pantalla2enabled"
-      @updatingPantalla="updatingPantallaActual"
-      :is="pantallas.home"
-      key="Home"
-    ></component>
-   
+  <v-app id="inspire" class="overflow-y-hidden">
+    <v-navigation-drawer v-model="pantallas.barra.visible" app>
+      <!-- contenido de la barra lateral -->
+      <component :is="pantallas.barra.content"></component>
+    </v-navigation-drawer>
+    <v-toolbar color="cyan" dark flat>
+      <v-app-bar-nav-icon v-on:click="toggleBarraLateral"></v-app-bar-nav-icon>
+      <v-toolbar-title>Los chinitos</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <!-- <v-btn icon>
+        <v-icon>mdi-magnify</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn> -->
+    </v-toolbar>
+    <v-card
+      elevation="0"
+      class="contenedor overflow-y-hidden rounded-0"
+      :height="pantalla.size.y - 56"
+    >
+      <v-fade-transition mode="out-in">
+        <keep-alive max="5">
+          <router-view :key="$route.fullPath"></router-view>
+        </keep-alive>
+      </v-fade-transition>
+    </v-card>
   </v-app>
 </template>
-
+<!-- <component
+        v-if="!pantalla2enabled"
+        @updatingPantalla="updatingPantallaActual"
+        :is="pantallas.home"
+      ></component>-->
 <script>
 /*  
 <component  key="Secundaria"
      :is="pantallas.secudaria"></component>
 <component key="Secundaria"
      :is="pantallas.secudaria"></component> */
-//import Home from "./components/Home";
-//import CustomIcon from "./components/ui/CustomIcon";
-//import { VTextField } from "vuetify/lib";
+
 import Home from "./components/Home";
 import client_info from "./components/pages/cliente_info/cliente_info.vue";
-
+import barra_lateral from "./components/pages/barra_lateral/barra_lateral.vue";
 
 //import {VContainer} from 'vuetify/lib'
 export default {
@@ -29,12 +51,35 @@ export default {
     //CustomIcon,
   },
   data: () => ({
-    //
-    pantallas:{
-      home:Home,
-      secundaria:client_info
+    items: [
+      {
+        href: "home",
+        router: true,
+        title: "Home",
+        icon: "home",
+      },
+      {
+        href: "examples",
+        router: true,
+        title: "Example",
+        icon: "extension",
+      },
+      {
+        href: "about",
+        router: true,
+        title: "About",
+        icon: "domain",
+      },
+    ],
+    pantallas: {
+      home: Home,
+      secundaria: client_info,
+      barra: {
+        content: barra_lateral,
+        visible: false,
+      },
     },
-    pantalla2enabled:false,
+    pantalla2enabled: false,
     images: {
       background: "./assets/mockup.jpg",
       //close: require("../assets/close.svg")
@@ -47,22 +92,24 @@ export default {
     },
   }),
   methods: {
+    toggleBarraLateral() {
+      this.pantallas.barra.visible = !this.pantallas.barra.visible;
+    },
     updatingPantallaActual(nuevapantalla = {}) {
       console.log(nuevapantalla);
       if (nuevapantalla.name == "Home") {
-        this.pantallas.secundaria = null;
-        this.pantalla2enabled = false;
-      }else{
-        this.pantallas.secundaria = nuevapantalla.content;
-        this.pantalla2enabled = true;
+        this.pantallas.home = Home;
+        //this.pantalla2enabled = false;
+      } else {
+        this.pantallas.home = nuevapantalla.content;
+        //this.pantalla2enabled = true;
       }
     },
     buscarEnabled: function(e) {
       console.log(e);
       this.buscando_enabled = !this.buscando_enabled;
     },
-    cargar_opciones: function() {
-    },
+    cargar_opciones: function() {},
     tabs_content: function(card_id) {
       card_id = card_id.toUpperCase();
       if (card_id == "CLIENTES") {
@@ -87,3 +134,8 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.contenedor {
+  padding-bottom: 50px;
+}
+</style>

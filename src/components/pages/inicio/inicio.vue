@@ -1,7 +1,13 @@
 <template>
   <v-container>
     <v-card-text>
-      <div>Bienvenido {{ denuevoMsj }}</div>
+      <div class="title">Bienvenido {{ denuevoMsj }}</div>
+      <template>
+        <div class="cartas">
+          <carta-inicio />
+        </div>
+      </template>
+      <div>De que va esta aplicacion :</div>
       <p class="display-1 text--primary">
         Los Chinitos App
       </p>
@@ -26,11 +32,6 @@
         mdi-information
       </v-icon>
     </v-btn>
-    <v-text-field
-      label="Main input"
-      :rules="rules"
-      hide-details="auto"
-    ></v-text-field>
   </v-container>
 </template>
 <script>
@@ -39,6 +40,7 @@ import fecha from "../../../components/utils/fecha.js";
 
 //prueba
 import cliente_info from "../../../components/pages/cliente_info/cliente_info.vue";
+import carta_inicio_ from "../../../components/ui/carta_inicio.vue";
 const inicio = new inicio_class();
 export default {
   name: "inicio",
@@ -58,9 +60,9 @@ export default {
         content: cliente_info,
       });
     },
-    onScroll(){
+    onScroll() {
       console.log(1);
-    }
+    },
   },
   mounted() {
     //localStorage.removeItem("config/primer_inicio")
@@ -82,11 +84,16 @@ export default {
     /* auto_p3: function () {return `${this.p1} - ${this.p2}`}*/
   },
   components: {
-    /*"component_name":componentimport*/
+    "carta-inicio": carta_inicio_,
   },
   watch: {
     /*p4:function(newval,oldval){__hacealgo__} */
   },
 };
 </script>
-<style lang="scss" scoped></style>
+
+<style lang="scss" scoped>
+.cartas {
+  padding: 30px 0px;
+}
+</style>

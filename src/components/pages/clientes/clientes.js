@@ -1,73 +1,47 @@
 import my_genericos from "../../../components/utils/my_genericos.js";
+
+import { AvatarGenerator } from 'random-avatar-generator';
+
+
+const generator = new AvatarGenerator();
+
 class clientes {
     constructor() {
-        this.listado = [
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/1.jpg",
-                title: "Brunch this weekend?",
-                subtitle: `<span class="text--primary">Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`,
-            },
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/2.jpg",
-                title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-                subtitle: `<span class="text--primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-            },
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/3.jpg",
-                title: "Oui oui",
-                subtitle:
-                    '<span class="text--primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-            },
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/4.jpg",
-                title: "Birthday gifta",
-                subtitle:
-                    '<span class="text--primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
-            },
-
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-                title: "Recipe to tryaa",
-                subtitle:
-                    '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-            },
-
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-                title: "Recipe to tryaaa",
-                subtitle:
-                    '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-            },
-
-            {
-                avatar: "https://cdn.vuetifyjs.com/images/lists/5.jpg",
-                title: "Recipe to tryaaaa",
-                subtitle:
-                    '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-            },
-        ]
+        this.listado = [];
     }
-    cliente_data(data) {
-        return {
-            avatar: data.avatar || "",
-            title: data.title || "",
-            subtitle: data.subtitle || ""
-        }
-    }
+    
     get_listado() {
+        const context = this;
+        return new Promise(function (resolve,reject) {
+            const ruta = `${my_genericos.constantes.DBHOST}/clientes`
+            my_genericos.httpGetAsync(ruta, function (res) {
+                console.log(res);
+                let json = {}
+                try {
+                    json = JSON.parse(res);
+                    json = json.clientes;//este es el objeto padre dado por el endpoint /clientes
+                } catch (error) {
+                    reject("json parse fail")
+                }
 
-        let division = { divider: true, inset: true }
-        let arr_result = [];
-        const listado = Object.assign(this.listado, {});
-        arr_result.push({ header: "Hoy" });//cabecera
-        for (const key in listado) {
-            if (Object.hasOwnProperty.call(listado, key)) {
-                const element = listado[key];
-                arr_result.push(Object.assign(element, {}));
-                arr_result.push(Object.assign(division, {}))//copia de division
-            }
-        }
-        return arr_result
+                let division = { divider: true, inset: true }
+                let arr_result = [];
+               
+                arr_result.push({ header: "Hoy" });//cabecera
+                for (const key in json) {
+                    if (Object.hasOwnProperty.call(json, key)) {
+                        const element = context.cliente_data(json[key]);
+                        json[key] = element;
+                        element.avatar = generator.generateRandomAvatar(element.id)
+                        arr_result.push(element);
+                        arr_result.push(Object.assign(division, {}))//copia de division
+                    }
+                }
+                context.listado = Object.values(json);
+                resolve(arr_result)
+            })
+
+        })
     }
     filtrar_listado(text, fn) {
 
@@ -85,7 +59,7 @@ class clientes {
             if (Object.hasOwnProperty.call(listado, key)) {
                 const cliente = this.cliente_data(listado[key]);
 
-                my_genericos.coincidencias(text, cliente.title).then(function (res) {
+                my_genericos.coincidencias(text, cliente.name).then(function (res) {
                     console.log(res);
                     conteo++;
                     if (res.cantidad > 0) {
@@ -95,13 +69,13 @@ class clientes {
                         listado_res.push(Object.assign(division, {}))
                     }
                     if (size == conteo) {
-                        if(conteop <= 0){
+                        if (conteop <= 0) {
                             fn(listado);
-                        }else{
+                        } else {
                             cabecera.header = `${conteop}/${size}`;
                             fn(listado_res);
                         }
-                       
+
                     }
                 })
             }

@@ -1,5 +1,13 @@
+import constantes from "./constantes.js";
+import tipos from "./tipos.js";
+//import axios  from "axios"
+const axios = require('axios').default;
+
 class my_genericos {
-    constructor() { }
+    constructor() {
+        this.constantes = constantes;
+        this.tipos = tipos;
+    }
     httpGetAsync(theUrl, callback) {
         let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
@@ -10,24 +18,39 @@ class my_genericos {
         xmlHttp.send(null);
     }
     httpPost(theUrl, datas, fn_back) {
-        let context = this;
-        let formData = new FormData();
-        formData.append("json", context.base64_encode(datas));
+        //let context = this;
+        const params = new URLSearchParams()
+        let json = JSON.stringify(datas)
+        console.log(json);
+        for (const key in datas) {
+            if (Object.hasOwnProperty.call(datas, key)) {
+                const element = datas[key];
+                params.append(key, element);
+            }
+        }
+        const config = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+        axios.post(theUrl, params, config).then(function (res) {
+            fn_back(res);
+        })
 
+        
+       /*anterior metodo
+       let formData = new FormData();
         let xmlHttp = new XMLHttpRequest();
-
-
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 fn_back(xmlHttp.response);
             }
-
         }
-
         xmlHttp.open("POST", theUrl, true); // true for asynchronous 
-        xmlHttp.setRequestHeader("Content-type", "application/json")
-        xmlHttp.setRequestHeader("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        xmlHttp.send(formData);
+
+        xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        //xmlHttp.setRequestHeader("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        xmlHttp.send(formData); */
     }
 
     exportExcel(filename, datas, fn_back) {

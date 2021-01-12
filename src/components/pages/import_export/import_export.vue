@@ -1,59 +1,108 @@
 <template>
-  <v-container>
-    <v-col class="busqueda" cols="12" sm="6" md="4">
-      <v-text-field
-        v-model="busqueda_value"
-        label="Busqueda"
-        placeholder="Fulanito"
-        filled
-        rounded
-        dense
-        clearable
-      ></v-text-field>
-    </v-col>
-    <v-list three-line>
-      <template v-for="(item, index) in items">
-        <v-subheader
-          v-if="item.header"
-          :key="item.header"
-          v-text="item.header"
-        ></v-subheader>
+  <v-card class="elevation-0 overflow-y-auto" :height="pantalla.size.y - 80">
+    <v-tabs color="cyan accent-5" right>
+      <v-tab>Importar datos</v-tab>
+      <v-tab>Exportar datos</v-tab>
 
-        <v-divider
-          v-else-if="item.divider"
-          :key="index"
-          :inset="item.inset"
-        ></v-divider>
+      <v-tab-item key="import">
+        <v-card
+          class="overflow-y-auto pt-5 px-1"
+          fluid
+          :height="pantalla.size.y - 150"
+        >
+          <v-row>
+            <v-col cols="12" sm="6">
+              <v-textarea
+                v-model="importar_input_value"
+                filled
+                auto-grow
+                label="Ingresa los datos en formato JSON con items {'id':'1c911424','name':'Luanne','age':30},"
+                rows="4"
+                row-height="30"
+                shaped
+                class="inputdatas"
+              ></v-textarea>
+            </v-col>
+          </v-row>
 
-        <v-list-item v-else :key="item.title">
-          <v-list-item-avatar>
-            <v-img :src="item.avatar"></v-img>
-          </v-list-item-avatar>
+          <v-btn
+            class="mr-5"
+            v-on:click="analizar_fn"
+            color="secondary"
+            elevation="2"
+            >Analizar</v-btn
+          >
 
-          <v-list-item-content>
-            <v-list-item-title v-html="item.title"></v-list-item-title>
-            <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-    </v-list>
-  </v-container>
+          <v-btn v-on:click="save_data" color="primary" elevation="2"
+            >Guardar</v-btn
+          >
+          <v-card
+            class="overflow-y-auto pt-5 px-1 elevation-0 mt-3"
+            fluid
+            :height="pantalla.size.y / 2"
+          >
+            <v-treeview :items="items_tree"></v-treeview
+          ></v-card>
+        </v-card>
+      </v-tab-item>
+
+      <v-tab-item key="export">
+        <v-container fluid>
+          <v-row> </v-row>
+        </v-container>
+      </v-tab-item>
+    </v-tabs>
+  </v-card>
 </template>
 <script>
-import clientes from "../../../components/pages/clientes/clientes.js";
+import importe_module from "../../../components/pages/import_export/import_export_module.js";
 
-const clientesmodule = new clientes();
+const importex = new importe_module();
 export default {
   name: "clientes-com",
   data: function() {
     return {
-      clientes: clientesmodule,
-      items: clientesmodule.get_listado(),
+      importex: importex,
+      items_tree: [],
+      importar_input_value: `{"clientes":[{"id":"a45d1681","name":"Berriman","age":79}]}`,
       busqueda_value: "",
       busqueda_counter_check: 0,
+      pantalla: {
+        size: {
+          x: window.innerWidth,
+          y: window.innerHeight,
+        },
+      },
     };
   },
-  methods: {},
+  methods: {
+    analizar_fn() {
+      const context = this;
+      try {
+        context.items_tree = [];
+        const json_o = JSON.parse(context.importar_input_value);
+        if (typeof json_o == "object") {
+          context.importex.object_to_treeview(json_o).then(function (res) {
+            context.items_tree = res;
+          })
+        }
+      } catch (error) {
+        alert("Fallo");
+      }
+    },
+    save_data() {
+      this.importex
+        .upload_datos(this.importar_input_value)
+        .then(function(res) {
+          if (res !== null) {
+            alert("info subida");
+          }
+        })
+        .catch(function(error) {
+          alert(error);
+        });
+    },
+  },
   props: [
     /*"propertiename"*/
   ],
@@ -64,25 +113,16 @@ export default {
     /*"component_name":componentimport*/
   },
   watch: {
-    busqueda_value(n, o) {
-      const context = this;
-      console.log(o);
-      if (n == null || n == "") {
-        return;
-      }
-      this.busqueda_counter_check++;
-      let ccc = this.busqueda_counter_check; //hacemos esto para controlar la asycronizacion
-      clientesmodule.filtrar_listado(n, function(res) {
-        if (ccc == context.busqueda_counter_check) {
-          context.items = res;
-        }
-      });
-    },
+    busqueda_value() {},
     /*p4:function(newval,oldval){__hacealgo__} */
   },
 };
 </script>
 <style lang="scss" scoped>
+.inputdatas {
+  max-height: 300px;
+  overflow-y: auto;
+}
 .busqueda {
   margin-bottom: -20px;
   padding-bottom: 0px;

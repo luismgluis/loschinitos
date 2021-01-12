@@ -97,11 +97,11 @@ export default {
   },
   methods: {
     goHome() {
-      this.$emit("updatingPantalla", { name: "Home", content: "" });
+      this.$router.replace({ name: "home", params: { fromview: "cliente_info" } });
     },
   },
   props: [
-    /*"propertiename"*/
+    "uid"
   ],
   computed: {
     /* auto_p3: function () {return `${this.p1} - ${this.p2}`}*/
@@ -110,7 +110,12 @@ export default {
     /*"component_name":componentimport*/
   },
   watch: {
-    /*p4:function(newval,oldval){__hacealgo__} */
+    uid(){
+      console.log(this.uid);
+    }
+  },
+  mounted() {
+    console.log("cliente_info");
   },
 };
 </script>

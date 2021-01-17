@@ -142,6 +142,9 @@ export default {
       this.tab = card_id;
     },
   },
+  mounted(){
+    this.$emit("OnLoadPage", {name:"home",data:{}});
+  }
 };
 </script>
 <style lang="scss" scoped>

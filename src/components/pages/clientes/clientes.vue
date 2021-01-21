@@ -13,7 +13,7 @@
     </v-col>
     <v-card class="overflow-y-auto elevation-0" :height="pantalla.size.y - 200">
       <v-list three-line>
-        <template v-for="(item, index) in items">
+        <template v-for="(item, index) in clientes">
           <v-subheader
             v-if="item.header"
             :key="item.header"
@@ -42,7 +42,6 @@
       </v-list>
     </v-card>
     <v-btn
-      v-show="!hidden"
       color="pink"
       class="botonplus"
       dark
@@ -59,14 +58,17 @@
 import clientes from "../../../components/pages/clientes/clientes.js";
 //import cliente_info from "../../../components/pages/cliente_info/cliente_info.vue";
 import Globals from "../../utils/globals.js";
+import my_genericos from "../../utils/my_genericos.js";
 const clientesmodule = new clientes();
 export default {
   name: "clientes-com",
   data: function () {
     return {
       globals: new Globals(this.$globals),
-      clientes: clientesmodule,
+      clientesmodule: clientesmodule,
       items: [],
+      clientesAll: [],
+      clientes: [],
       busqueda_value: "",
       busqueda_counter_check: 0,
       pantalla: {
@@ -80,8 +82,11 @@ export default {
   methods: {
     openCliente(uid) {
       console.log(uid);
-
+      const context = this;
       this.$router.replace({ name: "cliente_info", params: { uid: uid } });
+      this.globals.setUpdateClientesPageFn(function () {
+        context.start();
+      });
       /*this.$emit("updatingPantalla", {
         name: "cliente_info",
         content: cliente_info,
@@ -92,6 +97,34 @@ export default {
       this.$router.replace({
         name: "cliente_info",
         params: { nuevo_cliente: true },
+      });
+    },
+    mostrarclientes(listado) {
+      const context = this;
+      if (my_genericos.object_count(listado) > 100) {
+        context.clientesAll = listado;
+        context.clientes = [];
+        let counter = 0;
+        for (const key in listado) {
+          if (Object.hasOwnProperty.call(listado, key)) {
+            const element = listado[key];
+            counter++ 
+            if(counter >= 100){
+              break
+            }else{
+              context.clientes.push(element);
+            }
+          }
+        }
+      }else{
+        context.clientesAll = listado;
+        context.clientes = listado;
+      }
+    },
+    start() {
+      const context = this;
+      clientesmodule.get_listado().then(function (listado) {
+        context.mostrarclientes(listado)
       });
     },
   },
@@ -115,17 +148,14 @@ export default {
       let ccc = this.busqueda_counter_check; //hacemos esto para controlar la asycronizacion
       clientesmodule.filtrar_listado(n, function (res) {
         if (ccc == context.busqueda_counter_check) {
-          context.items = res;
+          context.mostrarclientes(res)
         }
       });
     },
     /*p4:function(newval,oldval){__hacealgo__} */
   },
   mounted() {
-    const context = this;
-    clientesmodule.get_listado().then(function (listado) {
-      context.items = listado;
-    });
+    this.start();
   },
 };
 </script>

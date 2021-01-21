@@ -40,7 +40,6 @@ class my_genericos {
         axios.post(theUrl, params, config).then(function(res) {
           resolve(res.data);
         });
-       
       } catch (error) {
         reject("error");
       }
@@ -61,7 +60,6 @@ class my_genericos {
         xmlHttp.send(formData); */
   }
 
-
   object_isEmpty(obj) {
     if (obj == null) return false;
     for (let prop in obj) {
@@ -71,6 +69,34 @@ class my_genericos {
     }
 
     return true;
+  }
+  object_orderby_asc(objeto, keyfromfilter) {
+    function compare(a, b) {
+      if (a[keyfromfilter] < b[keyfromfilter]) {
+        return -1;
+      }
+      if (a[keyfromfilter] > b[keyfromfilter]) {
+        return 1;
+      }
+      return 0;
+    }
+
+    objeto.sort(compare);
+    return objeto;
+  }
+  object_orderby_desc(objeto, keyfromfilter) {
+    function compare(a, b) {
+      if (a[keyfromfilter] > b[keyfromfilter]) {
+        return -1;
+      }
+      if (a[keyfromfilter] < b[keyfromfilter]) {
+        return 1;
+      }
+      return 0;
+    }
+
+    objeto.sort(compare);
+    return objeto;
   }
   object_count(obj) {
     let conteo = 0;

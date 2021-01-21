@@ -12,11 +12,11 @@
       >
         mdi-feather
       </v-icon>
-      <span class="title font-weight-light">Actualidad</span>
+      <span class="title font-weight-light">Informe</span>
     </v-card-title>
 
     <v-card-text class="headline font-weight-bold">
-      Las ventas de hoy han superdado un 2% las de ayer.
+      Las ventas de hoy han superdado 2% las de ayer.
     </v-card-text>
 
     <v-card-actions>

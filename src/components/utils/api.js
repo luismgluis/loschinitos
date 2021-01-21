@@ -5,10 +5,11 @@ class Api {
     this.host = my_genericos.constantes.DBHOST;
   }
   clientesAll() {
+    const context = this;
     return new Promise(function(resolve, reject) {
       try {
         //--
-        const ruta = `${my_genericos.constantes.DBHOST}/clientes`;
+        const ruta = `${context.host}/clientes`;
         my_genericos.httpGetAsync(ruta, function(res) {
           try {
             if (typeof res.clientes !== "undefined") {
@@ -27,10 +28,11 @@ class Api {
     });
   }
   clienteOnce(uid) {
-    new Promise(function(resolve, reject) {
+    const context = this;
+    return new Promise(function(resolve, reject) {
       try {
         //--
-        const ruta = `${my_genericos.constantes.DBHOST}/cliente/${uid}`;
+        const ruta = `${context.host}/cliente/${uid}`;
         my_genericos.httpGetAsync(ruta, function(result) {
           try {
             let datos = {};
@@ -52,13 +54,65 @@ class Api {
       }
     });
   }
+  clienteOnceDetails(uid) {
+    const context = this;
+    return new Promise(function(resolve, reject) {
+      try {
+        //--
+        const ruta = `${context.host}/clientedetails/${uid}`;
+        my_genericos.httpGetAsync(ruta, function(result) {
+          try {
+            if (Object.hasOwnProperty.call(result, "cliente")) {
+              if (Object.hasOwnProperty.call(result, "productos")) {
+                if (Object.hasOwnProperty.call(result, "transacciones")) {
+                  const nprod = {};
+                  for (const key in result.productos) {
+                    if (Object.hasOwnProperty.call(result.productos, key)) {
+                      const element = result.productos[key];
+                      if(typeof element.uid !== 'undefined'){
+                          nprod[element.uid] = element;
+                      }
+                    }
+                  }
+                  result.productos = nprod;//convertimos productos en object para mejor manipulacion
+                  for (const key in result.transacciones) {
+                    if (Object.hasOwnProperty.call(result.transacciones, key)) {
+                      const element = result.transacciones[key];
+                      let costototal = 0;
+                      for (const key in element.produtids) {
+                        if (Object.hasOwnProperty.call(element.produtids, key)) {
+                          const pid = element.produtids[key];
+                          costototal += parseInt(result.productos[pid].price);
+                        }
+                      }
+                      element.pricetotal = costototal;
+                    }
+                  }
+
+                  resolve(result);
+                  return;
+                }
+              }
+            }
+            resolve(null);
+          } catch (error) {
+            reject(null);
+          }
+        });
+        //--
+      } catch (error) {
+        reject("error");
+      }
+    });
+  }
   clienteCrear(data) {
+    const context = this;
     return new Promise(function(resolve, reject) {
       try {
         const cliente = my_genericos.tipos.cliente(data);
         cliente.avatar = ""; //esto cuando subamos imagenes mientras solo avatars
         my_genericos
-          .httpPost(`${this.host}/cliente`, cliente)
+          .httpPost(`${context.host}/cliente`, cliente)
           .then(function(res) {
             resolve(res);
           });
@@ -68,20 +122,28 @@ class Api {
     });
   }
   clienteUpdate(data) {
+    const context = this;
     return new Promise(function(resolve, reject) {
       try {
         const cliente = my_genericos.tipos.cliente(data);
         cliente.avatar = ""; //esto cuando subamos imagenes mientras solo avatars
         my_genericos
-          .httpPost(`${this.host}/cliente/${cliente.id}`, cliente)
-          .then(function(res) {
-            resolve(res);
+          .httpPost(`${context.host}/cliente/${cliente.id}`, cliente)
+          .then(function(ob) {
+            try {
+              if(typeof ob.result !== 'undefined'){
+                  if(ob.result == "ok"){
+                    resolve(true);
+                  }
+              }
+            } catch (error) {
+              resolve(false);
+            }
           });
       } catch (error) {
         reject("error");
       }
     });
   }
-
 }
 export default new Api();

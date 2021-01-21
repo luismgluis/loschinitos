@@ -19,12 +19,16 @@
         de un nuevo Framework en este caso <br />
         <strong>Vue.js</strong> <br />
         <br />
-        Visualmente esta apoyado sobre <strong>vuetifyjs</strong>, es algo
-        similar a el tradicional Boostrap. Mi opinion sobre estas herramientas
-        era "Al final usarlas termina siendo contra producente" sin embargo los
-        modulos/componentes aportados por esta son bastante agradables,
+        Visualmente esta apoyado sobre <strong>vuetifyjs</strong> el cual proporciona
+        modulos/componentes esteticamente agradables,
         semejantes a una experiencia nativa-movil lo cual esta bien y en
         terminos practicos bastante afín al proposito de esta aplicacion.
+  <br />
+        El Backend de esta app esta en <div>
+          <a href=" https://github.com/luismgluis/loschinitos_backend_go" target="_blank" rel="noopener noreferrer">github.com/luismgluis/loschinitos_backend_go</a>
+        </div>
+        <br />
+        Recuerde leer el README.md
       </div>
     </v-card-text>
     <v-btn icon>

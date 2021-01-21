@@ -55,34 +55,44 @@ class clientes {
   }
   filtrar_listado(text, fn) {
     const listado = this.listado;
-    const listado_res = [];
+    let listado_res = [];
     const size = my_genericos.object_count(listado);
     let conteo = 0;
     let conteop = 0;
     const division = { divider: true, inset: true };
 
     const cabecera = { header: `${conteo}/${size}` };
-    listado_res.push(cabecera);
 
     for (const key in listado) {
       if (Object.hasOwnProperty.call(listado, key)) {
         const cliente = my_genericos.tipos.cliente(listado[key]);
 
         my_genericos.coincidencias(text, cliente.name).then(function(res) {
-          console.log(res);
+          //console.log(res);
           conteo++;
           if (res.cantidad > 0) {
             conteop++;
             cliente.coincidencia = res;
-            listado_res.push(cliente);
-            listado_res.push(Object.assign(division, {}));
+            listado_res.push({filtrador:res.cantidad,data:cliente});
           }
           if (size == conteo) {
             if (conteop <= 0) {
               fn(listado);
             } else {
+              const resultado = [];
               cabecera.header = `${conteop}/${size}`;
-              fn(listado_res);
+              listado_res = my_genericos.object_orderby_desc(listado_res,"filtrador")
+              resultado.push(cabecera);
+              for (const key in listado_res) {
+                if (Object.hasOwnProperty.call(listado_res, key)) {
+                  const element = listado_res[key];
+                  if (Object.hasOwnProperty.call(element, "filtrador")) {
+                    resultado.push(element.data);
+                    resultado.push(Object.assign(division, {}));
+                  }
+                }
+              }
+              fn(resultado);
             }
           }
         });

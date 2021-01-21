@@ -4,7 +4,7 @@
       <!-- contenido de la barra lateral -->
       <component :is="pantallas.barra.content"></component>
     </v-navigation-drawer>
-    <v-toolbar color="cyan" dark flat v-if="toolbarEnabled">
+    <v-toolbar class="topbar" color="cyan" dark flat v-if="toolbarEnabled">
       <v-app-bar-nav-icon v-on:click="toggleBarraLateral"></v-app-bar-nav-icon>
       <v-toolbar-title>Los chinitos</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -162,5 +162,8 @@ export default {
 <style lang="scss" scoped>
 .contenedor {
   padding-bottom: 50px;
+}
+.topbar {
+  max-height: 56px;
 }
 </style>

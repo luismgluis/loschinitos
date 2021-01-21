@@ -12,7 +12,7 @@ class tipos {
       id: data.id || data.uid,
       avatar: data.avatar || "",
       name: data.name || "",
-      age: data.age || null,
+      age: parseInt(data.age) || 0,
     };
   }
   producto(data) {

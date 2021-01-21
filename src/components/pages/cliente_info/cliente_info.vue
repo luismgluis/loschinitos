@@ -43,18 +43,6 @@
         <div class="font-weight-bold mb-2 subtitle-1">Actualmente Puedes</div>
         <div>Visualizar - Editar - Eliminar</div>
         <v-card-text>
-          <!-- <v-row align="center" class="mx-0">
-            <v-rating
-              :value="4.5"
-              color="amber"
-              dense
-              half-increments
-              :readonly="editEnabled"
-              size="14"
-            ></v-rating>
-
-          <div class="grey--text ml-4">4.5 (413)</div>
-          </v-row>-->
           <div class="my-4 subtitle-1">
             • Esta es la informacion almacenada actualmente de
             {{ clienteData.name }}.
@@ -71,6 +59,88 @@
               ></v-text-field>
             </v-col>
           </v-row>
+
+          <v-col v-if="!editEnabled" class="mx-0 px-0">
+            <v-list>
+              <v-list-group :value="true" prepend-icon="mdi-wallet-giftcard">
+                <template v-slot:activator>
+                  <v-list-item-title>Historial de compras</v-list-item-title>
+                </template>
+
+                <v-list-group no-action sub-group>
+                  <template v-slot:activator>
+                    <v-list-item-content>
+                      <v-list-item-title>Actions</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+
+                  <v-list-item
+                    v-for="([title, icon], i) in cruds"
+                    :key="i"
+                    link
+                  >
+                    <v-list-item-title v-text="title"></v-list-item-title>
+
+                    <v-list-item-icon>
+                      <v-icon v-text="icon"></v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-group>
+              </v-list-group>
+
+              <v-list-group prepend-icon="mdi-target-account">
+                <template v-slot:activator>
+                  <v-list-item-title>Productos Similares</v-list-item-title>
+                </template>
+
+                <v-list-group no-action sub-group>
+                  <template v-slot:activator>
+                    <v-list-item-content>
+                      <v-list-item-title>Actions</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+
+                  <v-list-item
+                    v-for="([title, icon], i) in cruds"
+                    :key="i"
+                    link
+                  >
+                    <v-list-item-title v-text="title"></v-list-item-title>
+
+                    <v-list-item-icon>
+                      <v-icon v-text="icon"></v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-group>
+              </v-list-group>
+
+              <v-list-group prepend-icon="mdi-arrow-bottom-right-bold-outline">
+                <template v-slot:activator>
+                  <v-list-item-title>Otros</v-list-item-title>
+                </template>
+
+                <v-list-group no-action sub-group>
+                  <template v-slot:activator>
+                    <v-list-item-content>
+                      <v-list-item-title>Actions</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+
+                  <v-list-item
+                    v-for="([title, icon], i) in cruds"
+                    :key="i"
+                    link
+                  >
+                    <v-list-item-title v-text="title"></v-list-item-title>
+
+                    <v-list-item-icon>
+                      <v-icon v-text="icon"></v-icon>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list-group>
+              </v-list-group>
+            </v-list>
+          </v-col>
 
           <v-col cols="12" sm="6" v-if="editEnabled">
             <v-btn color="primary" @click="updateCliente"> Guardar </v-btn>
@@ -100,6 +170,9 @@ export default {
       client_info_class: cinfo,
       clienteData: basec,
       clienteData_last_original: {},
+      clienteData_historial: {},
+      clienteData_similares: {},
+      clienteData_otros: {},
       editEnabled: false,
       options: [
         { title: "Editar", value: "edit" },
@@ -118,11 +191,14 @@ export default {
     };
   },
   methods: {
-    goHome() {
+    goHome(withupdate = false) {
       this.$router.replace({
         name: "home",
         params: { fromview: "cliente_info" },
       });
+      if (withupdate) {
+        this.globals.UpdateClientesPage();
+      }
     },
     cancelEdit() {
       this.restoreInformacion();
@@ -131,18 +207,23 @@ export default {
       }
     },
     updateCliente() {
+      const context = this;
       console.log(this.campos);
       console.log(this.clienteData);
       if (typeof this.nuevo_cliente !== "undefined" && this.nuevo_cliente) {
-        this.client_info_class.subirCliente(this.clienteData).then(function (res) {
-          console.log(res);
-          this.goHome();
-        });
-      }else{
-         this.client_info_class.subirCliente(this.clienteData).then(function (res) {
-          console.log(res);
-          this.goHome();
-        });
+        this.client_info_class
+          .subirCliente(this.clienteData)
+          .then(function (res) {
+            console.log(res);
+            context.goHome(true);
+          });
+      } else {
+        this.client_info_class
+          .actualizarCliente(this.clienteData)
+          .then(function (res) {
+            console.log(res);
+            context.goHome(true);
+          });
       }
     },
     restoreInformacion() {
@@ -172,10 +253,21 @@ export default {
         }
       }
     },
+    insertarDetalles(data) {
+      console.log(data);
+      this.clienteData_historial = data.transacciones;
+      this.clienteData_similares = data.productos;
+      this.clienteData_otros = data.otros;
+    },
     loadClienteInfo(uid) {
       const context = this;
+      console.log("ID cliente:", uid);
+      localStorage.setItem("cliente_info/ultimabusqueda",uid)//guardamos la busqueda para cierres inesperados
       cinfo.getClienteInfo(uid, function (res) {
         context.insertarInformacion(res);
+        cinfo.getClienteInfoDetails(uid, function (res) {
+          context.insertarDetalles(res);
+        });
       });
     },
     loadNuevocliente() {
@@ -207,6 +299,7 @@ export default {
   watch: {
     uid() {
       console.log(this.uid);
+      this.editEnabled = false;
       this.loadClienteInfo(this.uid);
     },
     nuevo_cliente() {
@@ -238,10 +331,18 @@ export default {
     } else if (typeof this.uid !== "undefined") {
       this.loadClienteInfo(this.uid);
       this.nuevo_cliente = false;
+      this.editEnabled = false;
     } else {
-      this.loadNuevocliente();
-      this.editEnabled = true;
-      this.nuevo_cliente = true;
+      let id = localStorage.getItem("cliente_info/ultimabusqueda");
+      if (id) {
+        this.loadClienteInfo(id);
+        this.nuevo_cliente = false;
+        this.editEnabled = false;
+      } else {
+        this.loadNuevocliente();
+        this.editEnabled = true;
+        this.nuevo_cliente = true;
+      }
     }
   },
 };

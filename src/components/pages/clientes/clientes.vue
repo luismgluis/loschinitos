@@ -11,35 +11,57 @@
         clearable
       ></v-text-field>
     </v-col>
+    <!-- v-for="(item, index) in clientes"  
+          <v-list-item
+              :key="item.id"
+              v-on:click="openCliente(item.id)"
+              class="bg1"
+            >
+            {{item.id}}
+            </v-list-item>
+            
+           <v-list-item-avatar>
+                <v-img :src="item.avatar"></v-img>
+              </v-list-item-avatar>
+
+              <v-list-item-content>
+                <v-list-item-title v-html="item.name"></v-list-item-title>
+                <v-list-item-subtitle
+                  v-html="item.age_text"
+                ></v-list-item-subtitle>
+              </v-list-item-content>
+              -->
+
     <v-card class="overflow-y-auto elevation-0" :height="pantalla.size.y - 200">
-      <v-list three-line>
-        <template v-for="(item, index) in clientes">
-          <v-subheader
-            v-if="item.header"
-            :key="item.header"
-            v-text="item.header"
-          ></v-subheader>
-
-          <v-divider
-            v-else-if="item.divider"
-            :key="index"
-            :inset="item.inset"
-          ></v-divider>
-
-          <v-list-item v-else :key="item.id" v-on:click="openCliente(item.id)">
+      <v-virtual-scroll
+        :items="clientes"
+        :item-height="50"
+        :height="pantalla.size.y - 200"
+      >
+        <template v-slot:default="{ item }">
+          <v-list-item v-if="!item.header">
             <v-list-item-avatar>
-              <v-img :src="item.avatar"></v-img>
+              <v-avatar size="56" class="white--text">
+                <v-img :src="item.avatar"></v-img>
+              </v-avatar>
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title v-html="item.name"></v-list-item-title>
-              <v-list-item-subtitle
-                v-html="item.age_text"
-              ></v-list-item-subtitle>
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
             </v-list-item-content>
+
+            <v-list-item-action>
+              <v-btn depressed small v-on:click="openCliente(item.id)">
+                Detalles
+                <v-icon color="orange darken-1" right> mdi-open-in-new </v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item v-else>
+            {{ item.header }}
           </v-list-item>
         </template>
-      </v-list>
+      </v-virtual-scroll>
     </v-card>
     <v-btn
       color="pink"
@@ -108,15 +130,15 @@ export default {
         for (const key in listado) {
           if (Object.hasOwnProperty.call(listado, key)) {
             const element = listado[key];
-            counter++ 
-            if(counter >= 100){
-              break
-            }else{
+            counter++;
+            if (counter >= 100) {
+              break;
+            } else {
               context.clientes.push(element);
             }
           }
         }
-      }else{
+      } else {
         context.clientesAll = listado;
         context.clientes = listado;
       }
@@ -124,7 +146,7 @@ export default {
     start() {
       const context = this;
       clientesmodule.get_listado().then(function (listado) {
-        context.mostrarclientes(listado)
+        context.mostrarclientes(listado);
       });
     },
   },
@@ -138,21 +160,22 @@ export default {
     /*"component_name":componentimport*/
   },
   watch: {
-    busqueda_value(n, o) {
+    async busqueda_value(n) {
       const context = this;
-      console.log(o);
       if (n == null || n == "") {
         return;
       }
       this.busqueda_counter_check++;
       let ccc = this.busqueda_counter_check; //hacemos esto para controlar la asycronizacion
-      clientesmodule.filtrar_listado(n, function (res) {
+      setTimeout(async () => {
+        //  3 doritos despues..
+        let data = await clientesmodule.filtrar_listado(this.busqueda_value);
         if (ccc == context.busqueda_counter_check) {
-          context.mostrarclientes(res)
+          console.log("Render", data.length);
+          context.mostrarclientes(data);
         }
-      });
+      }, 300);
     },
-    /*p4:function(newval,oldval){__hacealgo__} */
   },
   mounted() {
     this.start();
@@ -167,5 +190,10 @@ export default {
 .botonplus {
   bottom: 20px;
   position: absolute;
+}
+.bg1 {
+  border-radius: 20;
+  border-style: solid;
+  border-bottom-width: 2px;
 }
 </style>

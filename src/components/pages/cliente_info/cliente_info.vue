@@ -62,30 +62,21 @@
 
           <v-col v-if="!editEnabled" class="mx-0 px-0">
             <v-list>
-              <v-list-group :value="true" prepend-icon="mdi-wallet-giftcard">
+              <v-list-group :value="false" prepend-icon="mdi-wallet-giftcard">
                 <template v-slot:activator>
                   <v-list-item-title>Historial de compras</v-list-item-title>
                 </template>
-
-                <v-list-group no-action sub-group>
-                  <template v-slot:activator>
-                    <v-list-item-content>
-                      <v-list-item-title>Actions</v-list-item-title>
-                    </v-list-item-content>
-                  </template>
-
-                  <v-list-item
-                    v-for="([title, icon], i) in cruds"
-                    :key="i"
-                    link
-                  >
-                    <v-list-item-title v-text="title"></v-list-item-title>
-
-                    <v-list-item-icon>
-                      <v-icon v-text="icon"></v-icon>
-                    </v-list-item-icon>
-                  </v-list-item>
-                </v-list-group>
+                <v-row v-for="item in campos" :key="item.key" class="mt-3">
+                  <v-col class="campoedit" cols="12" sm="6">
+                    <v-text-field
+                      v-model="clienteData[item.key]"
+                      :value="item.value"
+                      :label="item.name"
+                      outlined
+                      :readonly="!editEnabled"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-list-group>
 
               <v-list-group prepend-icon="mdi-target-account">
@@ -262,7 +253,7 @@ export default {
     loadClienteInfo(uid) {
       const context = this;
       console.log("ID cliente:", uid);
-      localStorage.setItem("cliente_info/ultimabusqueda",uid)//guardamos la busqueda para cierres inesperados
+      localStorage.setItem("cliente_info/ultimabusqueda", uid); //guardamos la busqueda para cierres inesperados
       cinfo.getClienteInfo(uid, function (res) {
         context.insertarInformacion(res);
         cinfo.getClienteInfoDetails(uid, function (res) {

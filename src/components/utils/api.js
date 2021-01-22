@@ -4,7 +4,7 @@ class Api {
   constructor() {
     this.host = my_genericos.constantes.DBHOST;
   }
-  clientesAll() {
+  async clientesAll() {
     const context = this;
     return new Promise(function(resolve, reject) {
       try {

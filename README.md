@@ -20,6 +20,15 @@ Es una App de prueba la cual empece a crear el 01/01/2021 a razon de aprender Vu
 - Exponer un endpoint que active la importacion de datos desde un API externo.
 
 
+Todos los desafios estan solucionados, algunos con mas dificultad que otros.
+
+Estoy puliendo y mejorando detalles de este proyecto porque pienso usarlo como base de nuevos proyectos de produccion privados.
+
+Lo importante es que en conclusion me ha gustado mucho el uso de vue, tambien me vi el documental <a href="https://www.youtube.com/watch?v=OrxmtDw4pVI&ab_channel=Honeypot" alt="github">Vue-Documental</a> el cual cerro con sello de oro para decir que continuare usando vue en mis proyectos, es muy genial realmente.
+
+<p>Vista previa</p>
+<img src="https://github.com/luismgluis/loschinitos/blob/main/src/assets/preview.gif"></img>
+
 Para iniciar el proyecto simplemente debe
 
 ## Instalar dependencias npm

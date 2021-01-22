@@ -160,10 +160,13 @@ export default {
     /*"component_name":componentimport*/
   },
   watch: {
-    async busqueda_value(n) {
+    async busqueda_value(n, o) {
       const context = this;
       if (n == null || n == "") {
-        return;
+        console.log("cancel");
+        if (o == n) {
+          return;
+        }
       }
       this.busqueda_counter_check++;
       let ccc = this.busqueda_counter_check; //hacemos esto para controlar la asycronizacion

@@ -66,16 +66,13 @@
                 <template v-slot:activator>
                   <v-list-item-title>Historial de compras</v-list-item-title>
                 </template>
-                <v-row v-for="item in campos" :key="item.key" class="mt-3">
-                  <v-col class="campoedit" cols="12" sm="6">
-                    <v-text-field
-                      v-model="clienteData[item.key]"
-                      :value="item.value"
-                      :label="item.name"
-                      outlined
-                      :readonly="!editEnabled"
-                    ></v-text-field>
-                  </v-col>
+                <v-row v-for="item in clienteData_historial" :key="item.uid" class="mt-3">
+                  <v-list-item three-line>
+                    <v-list-item-content>
+                      <v-list-item-title>(${{item.pricetotal}}) - {{item.uid}} </v-list-item-title>
+                      <v-list-item-subtitle v-html="item.texto"></v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
                 </v-row>
               </v-list-group>
 

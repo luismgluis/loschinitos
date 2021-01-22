@@ -20,6 +20,7 @@ class tipos {
       id: data.id || data.uid,
       price: data.price || 9999999999,
       name: data.name || "",
+      PRODID: data.PRODID || ""
     };
   }
   transaccion(data) {

@@ -61,7 +61,11 @@ class clientes {
   }
  async filtrar_listado(text) {
     const context = this;
-    let result = [];
+    function retornarOriginal() {
+      let n = context.listado.slice()
+      n.unshift({header:"Total : " + n.length})
+      return n;
+    }
     try {
       const listado = context.listado;
       let listado_res = [];
@@ -85,7 +89,7 @@ class clientes {
           }
           if (size == conteo) {
             if (conteop <= 0) {
-              return (result);
+              return retornarOriginal();
             } else {
               const resultado = [];
               cabecera.header = `${conteop}/${size}`;
@@ -109,9 +113,9 @@ class clientes {
         }
       }
     } catch (error) {
-      return result;
+      return retornarOriginal();
     }
-    return result;
+    return retornarOriginal();
   }
   filtrar_listado2(text) {
     const context = this;

@@ -6,44 +6,60 @@ class cliente_info_module {
     if (uid == "") {
       return;
     }
-    api.clienteOnce(uid).then(function (datos) {
+    api.clienteOnce(uid).then(function(datos) {
       const cliente = my_genericos.tipos.cliente(datos);
       console.log(cliente);
-      
+
       fn(cliente);
-    })
+    });
   }
-  getClienteInfoDetails(uid,fn){
+  getClienteInfoDetails(uid, fn) {
     if (uid == "") {
       return;
     }
-    api.clienteOnceDetails(uid).then(function (datos) {
+    api.clienteOnceDetails(uid).then(function(datos) {
       console.log(datos);
-      
-      const cliente = my_genericos.tipos.cliente(datos.cliente);
-      console.log(cliente);
+      for (const key in datos.transacciones) {
+        if (Object.hasOwnProperty.call(datos.transacciones, key)) {
+          const element = datos.transacciones[key];
+          let texto = ``;
+          let arrprods = element.produtids;
+          for (const keyp in arrprods) {
+            if (Object.hasOwnProperty.call(arrprods, keyp)) {
+              const idprod = arrprods[keyp];
+              const prod = my_genericos.tipos.producto(datos.productos[idprod]);
+              if (typeof prod !== "undefined") {
+                texto += `${prod.name} ${prod.price} \n`;
+              }
+            }
+          }
+          element.texto = texto;
+        }
+      }
+      datos.transacciones = Object.values(datos.transacciones);
+
       fn(datos);
-    })
+    });
   }
-  actualizarCliente(data){
+  actualizarCliente(data) {
     return new Promise(function(resolve, reject) {
       try {
-        api.clienteUpdate(data).then(function (res) {
+        api.clienteUpdate(data).then(function(res) {
           resolve(res);
-        })
+        });
       } catch (error) {
-       reject("error");
+        reject("error");
       }
     });
   }
-  subirCliente(data){
+  subirCliente(data) {
     return new Promise(function(resolve, reject) {
       try {
-        api.clienteCrear(data).then(function (res) {
+        api.clienteCrear(data).then(function(res) {
           resolve(res);
-        })
+        });
       } catch (error) {
-       reject("error");
+        reject("error");
       }
     });
   }

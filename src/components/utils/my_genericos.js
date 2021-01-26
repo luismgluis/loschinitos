@@ -1,5 +1,6 @@
 import constantes from "./constantes.js";
 import tipos from "./tipos.js";
+import fecha from "./fecha.js";
 //import axios  from "axios"
 const axios = require("axios").default;
 
@@ -7,6 +8,7 @@ class my_genericos {
   constructor() {
     this.constantes = constantes;
     this.tipos = tipos;
+    this.fecha = fecha;
   }
   httpGetAsync(theUrl, callback) {
     const config = {
@@ -71,6 +73,7 @@ class my_genericos {
     return true;
   }
   object_orderby_asc(objeto, keyfromfilter) {
+
     function compare(a, b) {
       if (a[keyfromfilter] < b[keyfromfilter]) {
         return -1;
@@ -81,6 +84,9 @@ class my_genericos {
       return 0;
     }
 
+    if(typeof objeto == 'object'){
+          objeto = Object.values(objeto);
+    }
     objeto.sort(compare);
     return objeto;
   }
@@ -99,14 +105,7 @@ class my_genericos {
     return objeto;
   }
   object_count(obj) {
-    let conteo = 0;
-    for (const key in obj) {
-      if (Object.hasOwnProperty.call(obj, key)) {
-        //const element = obj[key];
-        conteo++;
-      }
-    }
-    return conteo;
+    return  Object.keys(obj).length;
   }
   object_remove_item(obj = {}, key_remove = "") {
     if (obj == null) return false;
@@ -121,6 +120,16 @@ class my_genericos {
       }
     }
     return new_object;
+  }
+  object_get_array_of_child(obj,key_child){
+    let narr = [];
+    for (const key in obj) {
+      if (Object.hasOwnProperty.call(obj, key)) {
+        const element = obj[key];
+        narr.push(element[key_child])
+      }
+    }
+    return narr;
   }
   coincidencias(busca_esto, en_esto) {
     return new Promise((resolve) => {
@@ -323,60 +332,6 @@ class my_genericos {
             
             ]) */
   }
-
-  obtener_fecha_actual_texto() {
-    let d = new Date();
-    let m = d.getMinutes();
-    let s = d.getSeconds();
-    if (m < 10) {
-      m = `0${m}`;
-    }
-    if (s < 10) {
-      s = `0${s}`;
-    }
-    return (
-      d.getDate() +
-      "/" +
-      parseInt(d.getMonth() + 1) +
-      "/" +
-      d.getFullYear() +
-      " " +
-      d.getHours() +
-      ":" +
-      m +
-      "." +
-      s
-    );
-  }
-  obtener_fecha_actual_numeric() {
-    return Number(new Date());
-  }
-
-  obtener_fecha_texto_de_objeto(d) {
-    //let d = new Date;
-    let m = d.getMinutes();
-    let s = d.getSeconds();
-    if (m < 10) {
-      m = `0${m}`;
-    }
-    if (s < 10) {
-      s = `0${s}`;
-    }
-    return (
-      d.getDate() +
-      "/" +
-      parseInt(d.getMonth() + 1) +
-      "/" +
-      d.getFullYear() +
-      " " +
-      d.getHours() +
-      ":" +
-      m +
-      "." +
-      s
-    );
-  }
-
   longpress(dom, fn = null) {
     let timer = null;
     let accionar = false;

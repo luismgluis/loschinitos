@@ -2,6 +2,14 @@
 class fecha {
     constructor() { }
 
+    fecha_unix_to_object(unix_timestamp){
+        let date = new Date(unix_timestamp * 1000);
+        return date;
+    }
+    fecha_unix_to_string(unix_timestamp){
+        let date = new Date(unix_timestamp * 1000);
+        return this.fecha_texto_de_objeto(date);
+    }
     fecha_actual_texto() {
         let d = new Date;
         let m = d.getMinutes();
@@ -62,8 +70,9 @@ class fecha {
     }
 
     sumarDias(fecha, dias) {
-        fecha.setDate(fecha.getDate() + dias);
-        return fecha;
+        let f = new Date(fecha.getTime())
+        f.setDate(f.getDate() + dias);
+        return f;
     }
 
 
@@ -115,6 +124,58 @@ class fecha {
         }
         return respuesta;
     }
+    obtener_fecha_actual_texto() {
+        let d = new Date();
+        let m = d.getMinutes();
+        let s = d.getSeconds();
+        if (m < 10) {
+          m = `0${m}`;
+        }
+        if (s < 10) {
+          s = `0${s}`;
+        }
+        return (
+          d.getDate() +
+          "/" +
+          parseInt(d.getMonth() + 1) +
+          "/" +
+          d.getFullYear() +
+          " " +
+          d.getHours() +
+          ":" +
+          m +
+          "." +
+          s
+        );
+      }
+      obtener_fecha_actual_numeric() {
+        return Number(new Date());
+      }
+    
+      obtener_fecha_texto_de_objeto(d) {
+        //let d = new Date;
+        let m = d.getMinutes();
+        let s = d.getSeconds();
+        if (m < 10) {
+          m = `0${m}`;
+        }
+        if (s < 10) {
+          s = `0${s}`;
+        }
+        return (
+          d.getDate() +
+          "/" +
+          parseInt(d.getMonth() + 1) +
+          "/" +
+          d.getFullYear() +
+          " " +
+          d.getHours() +
+          ":" +
+          m +
+          "." +
+          s
+        );
+      }
 }
 //let my_genericos = new my_genericos
 export default new fecha;

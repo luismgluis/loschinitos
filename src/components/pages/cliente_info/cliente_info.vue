@@ -59,74 +59,111 @@
               ></v-text-field>
             </v-col>
           </v-row>
+          <v-card
+            v-if="!editEnabled"
+            class="mx-auto text-center"
+            color="cyan"
+            dark
+          >
+            <v-card class="mx-auto text-center stats_panel"  color="cyan">
+              <v-card-text class="mx-0 px-0 stats_panel_grafic">
+                <v-sheet color="transparent"
+                  ><!--color="rgba(0, 0, 0, .12)" -->
+                  <v-sparkline
+                    :labels="clienteData_stats.keys"
+                    :value="clienteData_stats.values"
+                    color="rgba(255, 255, 255, .7)"
+                    height="100"
+                    padding="24"
+                    stroke-linecap="round"
+                    smooth
+                  >
+                  </v-sparkline>
+                </v-sheet>
+              </v-card-text>
+            </v-card>
 
+            <v-divider></v-divider>
+            <v-card-text>
+              <div class="subtitle-1 justify-center">Ultimas compras</div>
+            </v-card-text>
+          </v-card>
           <v-col v-if="!editEnabled" class="mx-0 px-0">
             <v-list>
+              <!-- Historial-->
               <v-list-group :value="false" prepend-icon="mdi-wallet-giftcard">
                 <template v-slot:activator>
                   <v-list-item-title>Historial de compras</v-list-item-title>
                 </template>
-                <v-row v-for="item in clienteData_historial" :key="item.uid" class="mt-3">
+                <v-row
+                  v-for="item in clienteData_historial"
+                  :key="item.uid"
+                  class="mt-3"
+                >
                   <v-list-item three-line>
                     <v-list-item-content>
-                      <v-list-item-title>(${{item.pricetotal}}) - {{item.uid}} </v-list-item-title>
-                      <v-list-item-subtitle v-html="item.texto"></v-list-item-subtitle>
+                      <v-list-item-title
+                        >Valor: <strong> ${{ item.pricetotal }}</strong> /
+                        Codigo : {{ item.uid }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ item.fecha }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle
+                        v-html="item.texto"
+                      ></v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
                 </v-row>
               </v-list-group>
-
+              <!-- Historial -->
+              <!-- Productos -->
               <v-list-group prepend-icon="mdi-target-account">
                 <template v-slot:activator>
-                  <v-list-item-title>Productos Similares</v-list-item-title>
+                  <v-list-item-title>Clientes cercanos</v-list-item-title>
                 </template>
-
-                <v-list-group no-action sub-group>
-                  <template v-slot:activator>
+                <v-row
+                  v-for="item in clienteData_similares"
+                  :key="item.uid"
+                  class="mt-3"
+                >
+                  <v-list-item three-line>
                     <v-list-item-content>
-                      <v-list-item-title>Actions</v-list-item-title>
+                      <v-list-item-title
+                        >{{ item.buyer.name }} - {{ item.buyer.uid }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        {{ item.texto }}
+                      </v-list-item-subtitle>
                     </v-list-item-content>
-                  </template>
-
-                  <v-list-item
-                    v-for="([title, icon], i) in cruds"
-                    :key="i"
-                    link
-                  >
-                    <v-list-item-title v-text="title"></v-list-item-title>
-
-                    <v-list-item-icon>
-                      <v-icon v-text="icon"></v-icon>
-                    </v-list-item-icon>
                   </v-list-item>
-                </v-list-group>
+                </v-row>
               </v-list-group>
+              <!-- Productos-->
 
+              <!-- Otros-->
               <v-list-group prepend-icon="mdi-arrow-bottom-right-bold-outline">
                 <template v-slot:activator>
-                  <v-list-item-title>Otros</v-list-item-title>
+                  <v-list-item-title>Recomendaciones</v-list-item-title>
                 </template>
-
-                <v-list-group no-action sub-group>
-                  <template v-slot:activator>
+                <v-row
+                  v-for="item in clienteData_recomendados"
+                  :key="item.uid"
+                  class="mt-3"
+                >
+                  <v-list-item three-line>
                     <v-list-item-content>
-                      <v-list-item-title>Actions</v-list-item-title>
+                      <v-list-item-title
+                        >{{ item.name }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                          Costo = ${{item.price}}
+                      </v-list-item-subtitle>
                     </v-list-item-content>
-                  </template>
-
-                  <v-list-item
-                    v-for="([title, icon], i) in cruds"
-                    :key="i"
-                    link
-                  >
-                    <v-list-item-title v-text="title"></v-list-item-title>
-
-                    <v-list-item-icon>
-                      <v-icon v-text="icon"></v-icon>
-                    </v-list-item-icon>
                   </v-list-item>
-                </v-list-group>
+                </v-row>
               </v-list-group>
+              <!-- Otros-->
             </v-list>
           </v-col>
 
@@ -158,9 +195,10 @@ export default {
       client_info_class: cinfo,
       clienteData: basec,
       clienteData_last_original: {},
-      clienteData_historial: {},
-      clienteData_similares: {},
-      clienteData_otros: {},
+      clienteData_historial: [],
+      clienteData_similares: [],
+      clienteData_stats: { keys: [], values: [] },
+      clienteData_recomendados: [],
       editEnabled: false,
       options: [
         { title: "Editar", value: "edit" },
@@ -170,6 +208,10 @@ export default {
         { key: "1", name: "Nombre", value: "Jhon Do" },
         { key: "2", name: "Apellido", value: "Federico" },
       ],
+      stats: {
+        labels: ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"],
+        values: [200, 675, 410, 390, 310, 460, 250, 240],
+      },
       pantalla: {
         size: {
           x: window.innerWidth,
@@ -190,7 +232,7 @@ export default {
     },
     cancelEdit() {
       this.restoreInformacion();
-      if (typeof this.nuevo_cliente !== "undefined" || this.nuevo_cliente) {
+      if (this.nuevo_cliente_enabled) {
         this.goHome(); //volvemos al home porque seria como lo ideal cuando cancelamos la creacion de un nuevo usuario;
       }
     },
@@ -198,7 +240,10 @@ export default {
       const context = this;
       console.log(this.campos);
       console.log(this.clienteData);
-      if (typeof this.nuevo_cliente !== "undefined" && this.nuevo_cliente) {
+      if (
+        typeof this.nuevo_cliente_enabled !== "undefined" &&
+        this.nuevo_cliente_enabled
+      ) {
         this.client_info_class
           .subirCliente(this.clienteData)
           .then(function (res) {
@@ -244,7 +289,14 @@ export default {
     insertarDetalles(data) {
       console.log(data);
       this.clienteData_historial = data.transacciones;
-      this.clienteData_similares = data.productos;
+      this.clienteData_similares = data.transaccionesporip;
+      this.clienteData_recomendados = data.productosrecomendados;
+      let k = my_genericos.object_get_array_of_child(data.stats, "name");
+      this.clienteData_stats = {
+        keys: k,
+        values: my_genericos.object_get_array_of_child(data.stats, "valor"),
+      };
+
       this.clienteData_otros = data.otros;
     },
     loadClienteInfo(uid) {
@@ -279,6 +331,13 @@ export default {
     nombreCambia: function () {
       return this.clienteData.name;
     },
+    nuevo_cliente_enabled: function () {
+      if (typeof this.nuevo_cliente !== "undefined") {
+        return this.nuevo_cliente;
+      } else {
+        return false;
+      } // nuevo_cliente_enabled:false,
+    },
     /* auto_p3: function () {return `${this.p1} - ${this.p2}`}*/
   },
   components: {
@@ -290,8 +349,8 @@ export default {
       this.editEnabled = false;
       this.loadClienteInfo(this.uid);
     },
-    nuevo_cliente() {
-      if (this.nuevo_cliente) {
+    nuevo_cliente_enabled() {
+      if (this.nuevo_cliente_enabled) {
         this.loadNuevocliente();
         this.editEnabled = true;
       }
@@ -312,24 +371,24 @@ export default {
   mounted() {
     console.log("cliente_info");
     this.$emit("OnLoadPage", { name: "cliente_info", data: {} });
-    if (typeof this.nuevo_cliente !== "undefined") {
+    if (this.nuevo_cliente_enabled == true) {
       this.loadNuevocliente();
       this.editEnabled = true;
-      this.nuevo_cliente = true;
+      this.nuevo_cliente_enabled = true;
     } else if (typeof this.uid !== "undefined") {
       this.loadClienteInfo(this.uid);
-      this.nuevo_cliente = false;
+      this.nuevo_clienuevo_cliente_enablednte = false;
       this.editEnabled = false;
     } else {
       let id = localStorage.getItem("cliente_info/ultimabusqueda");
       if (id) {
         this.loadClienteInfo(id);
-        this.nuevo_cliente = false;
+        this.nuevo_cliente_enabled = false;
         this.editEnabled = false;
       } else {
         this.loadNuevocliente();
         this.editEnabled = true;
-        this.nuevo_cliente = true;
+        this.nuevo_cliente_enabled = true;
       }
     }
   },
@@ -338,5 +397,12 @@ export default {
 <style lang="scss" scoped>
 .campoedit {
   margin-bottom: -20px;
+}
+.stats_panel {
+  overflow-y: auto;
+}
+.stats_panel_grafic {
+  width: 100%;
+  min-width: 500px;
 }
 </style>

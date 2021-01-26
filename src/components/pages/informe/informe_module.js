@@ -1,7 +1,7 @@
 import my_genericos from "../../../components/utils/my_genericos.js";
 class informe {
     constructor() {
-       console.log(my_genericos.obtener_fecha_actual_numeric());
+       console.log(my_genericos.fecha.obtener_fecha_actual_numeric());
     }
    
 }

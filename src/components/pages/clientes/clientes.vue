@@ -41,9 +41,7 @@
         <template v-slot:default="{ item }">
           <v-list-item v-if="!item.header">
             <v-list-item-avatar>
-              <v-avatar size="56" class="white--text">
-                <v-img :src="item.avatar"></v-img>
-              </v-avatar>
+              <v-img :src="item.avatar"></v-img>
             </v-list-item-avatar>
 
             <v-list-item-content>

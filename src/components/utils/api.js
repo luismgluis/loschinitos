@@ -36,10 +36,10 @@ class Api {
         my_genericos.httpGetAsync(ruta, function(result) {
           try {
             let datos = {};
-            if (Array.isArray(result.cliente)) {
-              datos = result.cliente[0];
+            if (Array.isArray(result.clientes)) {
+              datos = result.clientes[0];
             } else {
-              datos = result.cliente;
+              datos = result.clientes;
             }
             const cliente = my_genericos.tipos.cliente(datos, true);
             //console.log(cliente);

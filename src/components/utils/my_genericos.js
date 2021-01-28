@@ -20,6 +20,22 @@ class my_genericos {
       callback(result.data || null);
     });
   }
+  httpGet(theUrl) {
+    return new Promise(function(resolve, reject) {
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        };
+        axios.get(theUrl, config).then(function(result) {
+          resolve(result.data || null);
+        });
+      } catch (error) {
+       reject("error");
+      }
+    });
+  }
   httpPost(theUrl, datas) {
     //let context = this;
     return new Promise(function(resolve, reject) {

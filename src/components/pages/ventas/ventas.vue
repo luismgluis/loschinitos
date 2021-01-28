@@ -4,7 +4,7 @@
       class="overflow-y-auto elevation-0 m-0"
       :height="pantalla.size.y - 150"
     >
-      <v-container>
+      <v-container fluid >
         <v-radio-group v-model="radio_options_model">
           <v-radio
             v-for="n in radio"
@@ -39,42 +39,40 @@
         <v-card :height="pantalla.size.y - 200">
           <v-toolbar dense elevation="0">
             <v-toolbar-title>Listado de ventas</v-toolbar-title>
-            <v-spacer></v-spacer>
+            <!-- <v-spacer></v-spacer>
             <v-btn icon>
               <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            </v-btn>-->
           </v-toolbar>
           <v-card
             class="overflow-y-auto elevation-0"
             :height="pantalla.size.y - 240"
           >
             <v-list two-line class="listado">
+              <!-- v-model="selected" -->
               <v-list-item-group
-                v-model="selected"
                 active-class="cyan--text"
                 multiple
               >
                 <template v-for="(item, index) in items">
-                  <v-list-item :key="item.title">
+                  <v-list-item :key="item.uid">
                     <template v-slot:default="{ active }">
                       <v-list-item-content>
                         <v-list-item-title
-                          v-text="item.title"
+                          v-text="item.buyer.name"
                         ></v-list-item-title>
 
                         <v-list-item-subtitle
-                          class="text--primary"
-                          v-text="item.headline"
-                        ></v-list-item-subtitle>
+                          class="text--primary">{{item.produtids.length}} Producto {{  }}, Total: ${{item.pricetotal}}</v-list-item-subtitle>
 
-                        <v-list-item-subtitle
-                          v-text="item.subtitle"
-                        ></v-list-item-subtitle>
+                        <v-list-item-subtitle>
+                          Desde : {{item.device}}
+                        </v-list-item-subtitle>
                       </v-list-item-content>
 
                       <v-list-item-action>
                         <v-list-item-action-text
-                          v-text="item.action"
+                          v-text="item.hacex"
                         ></v-list-item-action-text>
 
                         <v-icon v-if="!active" color="grey lighten-1">
@@ -100,14 +98,13 @@
       </v-container>
     </v-card>
     <v-btn
-      v-show="!hidden"
       color="pink"
       class="botonplus"
       dark
       absolute
       right
       fab
-      v-on:click="nuevoCliente"
+      v-on:click="nuevaTransaccion"
     >
       <v-icon>mdi-point-of-sale</v-icon>
     </v-btn>
@@ -122,7 +119,7 @@ export default {
   data: function () {
     return {
       ventas: ventasmodule,
-      items: ventasmodule.get_listado(),
+      items: [],
       busqueda_value: "",
       busqueda_counter_check: 0,
       fecha: new Date().toISOString().substr(0, 10),
@@ -141,6 +138,12 @@ export default {
     };
   },
   methods: {
+    get_rango(){
+      const context = this;
+      ventasmodule.get_listado().then(function (res) {
+        context.items = res;
+      })
+    },
     formatDate(date) {
       if (!date) return null;
       console.log(date);
@@ -153,6 +156,9 @@ export default {
       const [month, day, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     },
+    nuevaTransaccion(){
+      alert("Vamos a crear una nueva transaccion-- en desarrollo")
+    }
   },
   props: [
     /*"propertiename"*/
@@ -191,6 +197,7 @@ export default {
   },
   mounted() {
     this.$emit("OnLoadPage", { name: "ventas", data: {} });
+    this.get_rango();
   },
 };
 </script>

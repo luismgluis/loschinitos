@@ -10,6 +10,9 @@ class fecha {
         let date = new Date(unix_timestamp * 1000);
         return this.fecha_texto_de_objeto(date);
     }
+    fecha_to_unix(fecha_obj){
+        return fecha_obj.getTime() / 1000
+    }
     fecha_actual_texto() {
         let d = new Date;
         let m = d.getMinutes();
@@ -75,7 +78,6 @@ class fecha {
         return f;
     }
 
-
     /**
      * 
      * @param {Date_Object} newYear1 Fecha mas vieja
@@ -83,7 +85,7 @@ class fecha {
      */
     minutos_entre_fechas(newYear1, hoyfecha2 = null, with_seconds = false) {
         if (hoyfecha2 == null) {
-            hoyfecha2 = this.obtener_fecha_objeto(this.obtener_fecha_actual_texto());
+            hoyfecha2 = this.fecha_objeto(this.obtener_fecha_actual_texto());
         }
         let dif = (hoyfecha2 - newYear1);
         let mins = Math.round((dif / 1000) / 60)
